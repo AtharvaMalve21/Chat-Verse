@@ -13,7 +13,7 @@ const App = () => {
   const { user } = useContext(UserContext);
 
   return (
-    <div className="bg-[url('./src/assets/bgImage.svg')] bg-contain">
+    <div className="min-h-screen bg-[url('/bgImage.svg')] bg-cover bg-center">
       <Routes>
         <Route path="/" element={<ProtectedRoute>
           <Home />
