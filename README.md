@@ -6,7 +6,7 @@
 
 ## 🚀 Features
 
-### 💡 Real-Time Messaging
+### 💡 Real-Time Messaging  
 - Instant messaging via WebSockets (Socket.IO)
 - Typing indicators
 - Read receipts (optional)

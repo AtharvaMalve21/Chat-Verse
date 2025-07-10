@@ -68,7 +68,20 @@ const Profile = () => {
               {user?.name?.charAt(0)}
             </div>
           )}
-          <h2 className="text-2xl font-semibold">{user?.name}</h2>
+
+          {/* Name + Verified Badge */}
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold">{user?.name}</h2>
+            {user?.isAccountVerified && (
+              <span className="flex items-center gap-1 text-xs text-green-400 bg-green-950 px-2 py-0.5 rounded-full font-medium shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Verified
+              </span>
+            )}
+          </div>
+
           <div className="flex items-center gap-2 text-gray-400 text-sm">
             <EnvelopeIcon className="w-4 h-4" />
             <span>{user?.email}</span>

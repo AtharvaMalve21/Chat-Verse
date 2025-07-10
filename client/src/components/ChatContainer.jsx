@@ -39,7 +39,7 @@ const ChatContainer = ({ selectedUser, setSelectedUser }) => {
 
   useEffect(() => {
     if (selectedUser) fetchMessageData();
-  }, [selectedUser, isLoggedIn]);
+  }, [selectedUser, isLoggedIn  ]);
 
   useEffect(() => {
     scrollEnd.current?.scrollIntoView({ behavior: 'smooth' });
@@ -125,7 +125,6 @@ const ChatContainer = ({ selectedUser, setSelectedUser }) => {
           image: latest.image,
           createdAt: latest.createdAt,
         });
-
         await fetchMessageData();
         setMessage('');
         setImageFile(null);

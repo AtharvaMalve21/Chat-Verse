@@ -9,47 +9,37 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { UserContext } from "../context/UserContext.jsx";
 
-
 const Signup = () => {
-
   const { setUser, setIsLoggedIn } = useContext(UserContext);
 
-  const [userData, setUserData] = useState(
-    {
-      name: '',
-      email: '',
-      password: ''
-    }
-  );
+  const [userData, setUserData] = useState({
+    name: '',
+    email: '',
+    password: ''
+  });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const toggleShowPassword = () => {
     setShowPassword((prev) => !prev)
   }
 
-
   const changeHandler = (ev) => {
-    let { name, value } = ev.target;
-
-    setUserData((prevData) => (
-      {
-        ...prevData,
-        [name]: value
-      }
-    ))
+    const { name, value } = ev.target;
+    setUserData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
   }
 
   const URI = import.meta.env.VITE_BACKEND_URI;
-
   const navigate = useNavigate();
 
   const signupHandler = async (ev) => {
-
     ev.preventDefault();
-
+    setLoading(true);
     try {
-
       const { data } = await axios.post(URI + "/api/v1/auth/signup", userData, {
         headers: {
           "Content-Type": "application/json"
@@ -61,17 +51,25 @@ const Signup = () => {
         setUser(data.data);
         setIsLoggedIn(true);
         toast.success(data.message);
-        navigate("/");
+        navigate("/verify-account");
       }
 
     } catch (err) {
-      toast.error(err.response.data.message);
+      toast.error(err.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
     }
-
   }
 
   return (
-    <div className="min-h-screen bg-cover bg-center flex flex-col sm:flex-row items-center justify-center gap-36 px-6 py-12 backdrop-blur-2xl">
+    <div className="min-h-screen bg-cover bg-center flex flex-col sm:flex-row items-center justify-center gap-36 px-6 py-12 backdrop-blur-2xl relative">
+
+      {/* Full Page Loader */}
+      {loading && (
+        <div className="absolute inset-0 z-50 bg-black bg-opacity-60 flex items-center justify-center">
+          <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
 
       {/* Left - Logo */}
       <div className="flex-shrink-0">
@@ -137,9 +135,12 @@ const Signup = () => {
 
           <button
             type="submit"
-            className="w-full py-3 bg-gradient-to-r from-purple-500 to-violet-600 hover:opacity-90 rounded-md text-white text-sm font-medium tracking-wide transition"
+            disabled={loading}
+            className={`w-full py-3 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-md text-sm font-medium tracking-wide transition ${
+              loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
+            }`}
           >
-            Create Account
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 

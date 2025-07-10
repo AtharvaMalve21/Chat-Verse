@@ -1,0 +1,36 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://api.chatverse.com/api/:path*"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/verify-account",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "token"
+        }
+      ],
+      "destination": "/verify-account",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://chatverse.vercel.app"
+        },
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}

@@ -12,6 +12,8 @@ const authRoutes = require("./routes/auth.routes.js");
 const userRoutes = require("./routes/user.routes.js");
 const messageRoutes = require("./routes/message.routes.js");
 
+const User = require("./models/user.model.js"); // ✅ Needed for fetching sender
+
 dotenv.config();
 const app = express();
 const server = createServer(app);
@@ -43,7 +45,6 @@ app.get("/", (req, res) => {
   res.json({ message: "Chat Verse!" });
 });
 
-
 // ============================
 // 💬 Socket.io Real-Time Logic
 // ============================
@@ -62,22 +63,37 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("user-online", userId);
   });
 
-  // Real-time messaging
+  // ✅ Real-time messaging with full sender data
   socket.on(
     "send-message",
-    ({ senderId, receiverId, message, image = null, createdAt }) => {
-      if (!senderId || !receiverId || (!message && !image)) return;
+    async ({ senderId, receiverId, message, image = null, createdAt }) => {
+      try {
+        if (!senderId || !receiverId || (!message && !image)) return;
 
-      const msg = {
-        sender: { _id: senderId },
-        receiver: { _id: receiverId },
-        message: message?.trim() || "",
-        image,
-        createdAt: createdAt || new Date(),
-      };
+        // ✅ Get full sender details with profile
+        const sender = await User.findById(senderId)
+          .select("name email additionalDetails")
+          .populate({
+            path: "additionalDetails",
+            model: "Profile",
+          });
 
-      io.to(receiverId).emit("receive-message", msg); // Receiver sees the message
-      io.to(senderId).emit("message-sent", msg);       // Sender gets confirmation
+        if (!sender) return;
+
+        const msg = {
+          sender,
+          receiver: { _id: receiverId },
+          message: message?.trim() || "",
+          image,
+          createdAt: createdAt || new Date(),
+        };
+
+        // Emit to receiver and sender
+        io.to(receiverId).emit("receive-message", msg);
+        io.to(senderId).emit("message-sent", msg);
+      } catch (err) {
+        console.error("WebSocket send-message error:", err.message);
+      }
     }
   );
 
@@ -94,7 +110,6 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("❌ Socket disconnected:", socket.id);
 
-    // Remove from online users
     for (let [userId, sockId] of onlineUsers.entries()) {
       if (sockId === socket.id) {
         onlineUsers.delete(userId);

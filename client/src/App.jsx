@@ -7,6 +7,7 @@ import Profile from './pages/Profile.jsx';
 import EditProfile from './pages/EditProfile.jsx';
 import { UserContext } from './context/UserContext.jsx';
 import ProtectedRoute from './components/ProtectedRoutes.jsx';
+import VerifyAccount from './pages/VerifyAccount.jsx';
 
 const App = () => {
   const { user } = useContext(UserContext);
@@ -21,12 +22,14 @@ const App = () => {
         {/* Public Routes (redirect if logged in) */}
         <Route
           path="/signup"
-          element={!user ? <Signup /> : <Navigate to="/" />}
+          element={<Signup />}
         />
         <Route
           path="/login"
           element={!user ? <Login /> : <Navigate to="/" />}
         />
+
+        <Route path='/verify-account' element={<VerifyAccount />} />
 
         {/* Protected Routes */}
         <Route
@@ -48,7 +51,7 @@ const App = () => {
       </Routes>
     </div>
   );
-  
+
 };
 
 export default App;
