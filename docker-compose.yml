@@ -1,0 +1,20 @@
+services:
+  backend:
+    build: ./server
+    ports:
+      - "8080:8080"
+    env_file: 
+      - ./server/.env
+    restart: always
+    command: ["npm", "run","dev"]
+    
+
+  frontend:
+    build: ./client
+    ports:
+      - "5173:5173"
+    env_file: 
+      - ./client/.env 
+    depends_on:
+      - backend
+    restart: always
